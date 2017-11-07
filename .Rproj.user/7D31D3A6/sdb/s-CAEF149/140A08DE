@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "library(shiny)\n\n# \nshinyUI(fluidPage(\n    \n    # Application title\n    titlePanel(\"「駅メモ」記録可視化ツール\"),\n    \n    fluidRow(\n        column(3, wellPanel(\n            # Select Line\n            selectInput(inputId = \"line_name_selected\", \n                        label = \"線路選択：\", \n                        choices = unique(dt$line_name), \n                        multiple = TRUE),\n            helpText(\"線路の追加及び削除する前に一回「チェックイン更新」ボタンを押すことをオススメします。\"),\n            # Button\n            downloadButton(\"downloadData\", \"路線データを保存\"),\n            # Horizontal line\n            tags$hr(),\n            # Input: Select a file ----\n            fileInput(\"upload\", \"アプロード\",\n                      accept = c(\"text/csv\",\n                                 \"text/comma-separated-values,text/plain\",\n                                 \".csv\")),\n            # Help text of upload function\n            helpText(\"前回処理したデータをアプロードし、作業に再び入る。\"),\n            tags$hr(),\n            #verbatimTextOutput(\"test\"),\n            actionButton(\"update\", \"チェックイン更新\"),\n            helpText(\"注意：更新しないと今までのチェックイン状態がなくなります。\")\n        )),\n        column(9, \n               fluidRow(column(6, DT::dataTableOutput(\"summary\")),\n                        column(6, plotOutput(\"summaryPlot\"))\n               ),\n               tags$br(),\n               fluidRow(column(12,DT::dataTableOutput('table')))\n        )\n        \n    )\n))\n",
+    "created" : 1509943222059.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2043502650",
+    "id" : "140A08DE",
+    "lastKnownWriteTime" : 1510046167,
+    "last_content_update" : 1510046167380,
+    "path" : "D:/ekimemo/Ekimemo/ui.R",
+    "project_path" : "Ekimemo/ui.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

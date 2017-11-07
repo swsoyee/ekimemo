@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "library(data.table)\nlibrary(dplyr)\n\nsource(\"http://aoki2.si.gunma-u.ac.jp/R/src/map.R\", encoding=\"euc-jp\")\nsource(\"http://aoki2.si.gunma-u.ac.jp/R/src/color_map3.R\", encoding=\"euc-jp\")\n\nlineCSV <- fread(file = \"db\\\\line20170403free.csv\", header = TRUE, encoding = \"UTF-8\")\nstationCSV <- fread(file = \"db\\\\station20170403free.csv\", header = TRUE, encoding = \"UTF-8\")\nprefCSV <- fread(file = \"db\\\\pref.csv\", header = TRUE, encoding = \"UTF-8\")\n\ndt <- left_join(stationCSV, lineCSV, by = \"line_cd\") %>%\n    select(station_cd, station_g_cd, station_name, line_cd, pref_cd, post, add, \n           lon.x, lat.x, e_status.x, company_cd, line_name, lon.y, lat.y, zoom, e_status.y) %>%\n    mutate(select = 0)\n\nConverToShow <- function(dt) {\n    dt %>% select(\"駅コード\" = station_cd,\n               \"駅名称\" = station_name,\n               \"住所\" = add, \n               \"駅状態\" = e_status.x, \n               \"事業者コード\" = company_cd, \n               \"路線名称\" = line_name, \n               \"路線状態\" = e_status.y,\n               \"チェックイン\" = select)\n}\n\n",
+    "created" : 1509972193266.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "448412189",
+    "id" : "71A628E1",
+    "lastKnownWriteTime" : 1510043682,
+    "last_content_update" : 1510043682228,
+    "path" : "D:/ekimemo/Ekimemo/global.R",
+    "project_path" : "Ekimemo/global.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
