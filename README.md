@@ -2,9 +2,9 @@
 
 ### 画面
 
-![1](D:\ekimemo\screenshot\1.png)
+![1](https://github.com/swsoyee/ekimemo/blob/master/screenshot/1.png)
 
-![2](D:\ekimemo\screenshot\2.png)
+![2](https://github.com/swsoyee/ekimemo/blob/master/screenshot/2.png)
 
 ### 確認したバグ
 
