@@ -4,7 +4,7 @@ source(file = "global.R", local = TRUE, encoding = "UTF-8")
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 
-    variables = reactiveValues(database = dt)
+    variables = reactiveValues(database = dt, previousUpload = "")
     
     # Data for showing
     datasetInput <- reactive({
@@ -19,7 +19,6 @@ shinyServer(function(input, output, session) {
             # Else show user's file
             req(input$upload)
             tmpDt <- fread(file = input$upload$datapath, header = TRUE)
-            print(nrow(tmpDt))
             # Using upload file select info to update local database
             if(sum(variables$database$select) == 0){
                 stationCode <- tmpDt[which(tmpDt$select == 1), ]$station_cd
@@ -31,40 +30,41 @@ shinyServer(function(input, output, session) {
             if(length(input$line_name_selected)){
                 tmpDt <- filter(variables$database, line_name %in% input$line_name_selected)
             }
+            variables$uploadFile <- tmpDt
             ConverToShow(tmpDt)
         }
     })
-    # Reactive summary table
+    # [2] Reactive summary table
     summaryTable <- reactive({
         tmpDt <- variables$database %>% 
             group_by("都道府県コード" = pref_cd) %>% 
-            summarise("駅数" = n(),
-                      "チェックイン済" = round(sum(select)),
-                      "コンプ率" = paste(round(`チェックイン済`/`駅数`*100, 2), "%")
+            summarise("駅数" = n_distinct(station_g_cd),
+                      "チェックイン済" = uniqueN(station_g_cd[select == 1]),
+                      "コンプ率（%）" = round(`チェックイン済`/`駅数`*100, 2)
                       )
         tmpDt %>% mutate("都道府県" = prefCSV[都道府県コード]$pref_name) %>%
-            select("都道府県", "駅数", "チェックイン済", "コンプ率")
+            select("都道府県", "駅数", "チェックイン済", "コンプ率（%）")
     })
-    # Reactive summary plot
+    # [3.1] Reactive summary plot
     summaryPlot <- reactive({
         dtForPlot <- variables$database %>% 
             group_by(pref_cd) %>% 
             summarise(rate = sum(select)/n() * 100)
     })
     
-    # 
+    # [3.2] Summary japan map
     output$summaryPlot <- renderPlot({
         data <- summaryPlot()$rate
+        
         # Color scale
-        vals <- unique(scales::rescale(c(data)))
-        o <- order(vals, decreasing = FALSE)
-        cols <- scales::col_numeric("Blues", domain = NULL)(vals)
-        colz <- setNames(data.frame(vals[o], cols[o]), NULL)
-        colz <- as.character(colz[,2])
-        if(0 %in% data) {
-            colz[1] <- "#FFFFFF"
+        if(!100 %in% data){
+            vals <- unique(scales::rescale(c(data, 100)))
+            colz <- makeColor(vals, data)
+            colz <- colz[1:length(colz)-1]
+        } else {
+            vals <- unique(scales::rescale(c(data)))
+            colz <- makeColor(vals, data)
         }
-        colz <- c("#FFFFFF", colz)
         
         # list
         plotData <- sort(unique(data))
@@ -72,7 +72,6 @@ shinyServer(function(input, output, session) {
         # Plot
         color.map3(data, plotData, colz)
     })
-    
     
     # Data for download
     datasetDownload <- reactive({
@@ -85,25 +84,34 @@ shinyServer(function(input, output, session) {
     
     # Showing data table in main panel
     output$table <- DT::renderDataTable({
-        #dt <- datasetInput()
         preSelect <- which(datasetInput()$チェックイン == 1)
-        #print(head(datasetInput()))
-        DT::datatable(datasetInput(), 
+        DT::datatable(datasetInput(),
+                      option = list(pageLength = 15,
+                                    searchHighlight = TRUE),
                       selection = list(mode = "multiple", 
                                        selected = preSelect, 
                                        target = "row"))
-        #DT::datatable(datasetInput())
     })
     
     # Text Console
-    #output$test <- renderText({
-    #    input$table_rows_selected
-    #})
-    
-    # Select summary
-    output$summary <- DT::renderDataTable({
-        summaryTable()
+    output$test <- renderText({
+        totalStationCount <- sum(summaryTable()$駅数)
+        totalCheckInCount <- sum(summaryTable()$チェックイン済)
+        paste("コンプ率：", totalCheckInCount, "/", totalStationCount,
+              "(", round(totalCheckInCount/totalStationCount *100,2),"% )"
+              )
     })
+    
+    # [2] Select summary table render
+    output$summary <- DT::renderDataTable({
+        DT::datatable(summaryTable(), options = list(
+            pageLength = 15,
+            orderClasses = TRUE,
+            order = list(list(4, "desc")),
+            dom = "tipr"
+            ))
+    })
+    
     # Download function in side panel
     output$downloadData <- downloadHandler(
         filename = function() {
