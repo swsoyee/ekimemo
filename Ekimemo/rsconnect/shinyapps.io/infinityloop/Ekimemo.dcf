@@ -1,0 +1,12 @@
+name: Ekimemo
+title: Ekimemo
+username:
+account: infinityloop
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 233068
+bundleId: 1064838
+url: https://infinityloop.shinyapps.io/Ekimemo/
+when: 1510148184.12774
+asMultiple: FALSE
+asStatic: FALSE

@@ -1,6 +1,7 @@
 library(data.table)
 library(dplyr)
 library(shinythemes)
+library(wordcloud2)
 
 source("http://aoki2.si.gunma-u.ac.jp/R/src/map.R", encoding="euc-jp")
 source("http://aoki2.si.gunma-u.ac.jp/R/src/color_map3.R", encoding="euc-jp")
@@ -47,13 +48,22 @@ ConverToShow <- function(dt) {
 }
 
 # Make a color panal for map plot
-makeColor <- function(vals, data) {
+makeColor <- function(vals, data, color) {
     o <- order(vals, decreasing = FALSE)
-    cols <- scales::col_numeric("Blues", domain = NULL)(vals)
+    cols <- scales::col_numeric(color, domain = NULL)(vals)
     colz <- setNames(data.frame(vals[o], cols[o]), NULL)
     colz <- as.character(colz[,2])
     if(0 %in% data) {
         colz[1] <- "#FFFFFF"
     }
     colz <- c("#FFFFFF", colz)
+}
+
+# 请忽略以下代码，它只是为了解决ShinyApps上没有中文字体的问题
+font_home <- function(path = '') file.path('~', '.fonts', path)
+if (Sys.info()[['sysname']] == 'Linux') {
+    dir.create(font_home())
+    file.copy('wqy-zenhei.ttc', font_home())
+    file.copy('ipam.ttc', font_home())
+    system2('fc-cache', paste('-f', font_home()))
 }
