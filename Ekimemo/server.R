@@ -4,7 +4,10 @@ source(file = "global.R", local = TRUE, encoding = "UTF-8")
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 
-    variables = reactiveValues(database = dt, uploadFile = "", summaryMapColor = "Blues")
+    variables = reactiveValues(database = dt, 
+                               uploadFile = "", 
+                               summaryMapColor = "Blues",
+                               dtSelectPref = "")
     
     # 数据表中展示的数据，如果没有选择任何线路则全部显示，否则只展示选择的线路中的数据
     datasetInput <- reactive({
@@ -28,6 +31,8 @@ shinyServer(function(input, output, session) {
     
     # Summary Tab
     source(file = "server-tab-summary.R", local = TRUE, encoding = "UTF-8")$value
+    
+    source(file = "server-tab-linePerPref.R", local = TRUE, encoding = "UTF-8")$value
     
     # Showing data table in main panel
     output$table <- DT::renderDataTable({

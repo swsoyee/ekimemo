@@ -24,6 +24,13 @@ shinyUI(
                         )#fluidPage
                )#tabPanel
                ,
-               tabPanel("分析ツール")
+               navbarMenu("チェックインマップ",
+                          tabPanel("全国巡回", leafletOutput("mymap", height = 800)),
+                          "----",
+                          tabPanel("都道府県別",
+                                   uiOutput('mytabs')
+                          )
+               )   
+               
     )
 )

@@ -2,6 +2,7 @@ library(data.table)
 library(dplyr)
 library(shinythemes)
 library(wordcloud2)
+library(leaflet)
 
 source("http://aoki2.si.gunma-u.ac.jp/R/src/map.R", encoding="euc-jp")
 source("http://aoki2.si.gunma-u.ac.jp/R/src/color_map3.R", encoding="euc-jp")
